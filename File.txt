@@ -1,0 +1,74 @@
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import java.util.ArrayList;
+import java.util.List;
+
+class Product {
+    private String name;
+    private double unitPrice;
+    private int gstPercentage;
+    private int quantity;
+
+   
+    @Override
+    public String toString() {
+        return "Product: " + name + ", Unit Price: " + unitPrice + ", GST %: " + gstPercentage + ", Quantity: " + quantity;
+    }
+}
+
+public class ShoppingBasketWithSelenium {
+    public static void main(String[] args) {
+        
+        System.setProperty("webdriver.chrome.driver", "path/to/chromedriver");
+
+        
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://example.com/shopping_cart");
+
+       
+       
+        List<Product> basket = new ArrayList<>();
+        basket.add(new Product("Leather wallet", 1100, 18, 1));
+        basket.add(new Product("Umbrella", 900, 12, 4));
+        basket.add(new Product("Cigarette", 200, 28, 3));
+        basket.add(new Product("Honey", 100, 0, 2));
+
+       
+        Assertions.assertEquals(198.0, basket.get(0).calculateGstAmount());
+        Assertions.assertEquals(432.0, basket.get(1).calculateGstAmount());
+        Assertions.assertEquals(168.0, basket.get(2).calculateGstAmount());
+        Assertions.assertEquals(0.0, basket.get(3).calculateGstAmount());
+
+       // Test calculateTotalPrice method
+
+        Assertions.assertEquals(1047.5, basket.get(0).calculateTotalPrice());
+        Assertions.assertEquals(3960.0, basket.get(1).calculateTotalPrice());
+        Assertions.assertEquals(788.4, basket.get(2).calculateTotalPrice());
+        Assertions.assertEquals(200.0, basket.get(3).calculateTotalPrice());
+    
+
+
+        List<WebElement> productRows = driver.findElements(By.cssSelector("tr.product-row"));
+        for (WebElement row : productRows) {
+            String name = row.findElement(By.cssSelector(".product-name")).getText();
+            double unitPrice = Double.parseDouble(row.findElement(By.cssSelector(".unit-price")).getText().replace("Rs. ", ""));
+            int gstPercentage = Integer.parseInt(row.findElement(By.cssSelector(".gst-percentage")).getText().replace("%", ""));
+            int quantity = Integer.parseInt(row.findElement(By.cssSelector(".quantity")).getText());
+
+            basket.add(new Product(name, unitPrice, gstPercentage, quantity));
+        }
+
+       
+        driver.quit();
+
+
+
+       
+        for (Product product : basket) {
+            System.out.println(product);
+        }
+    }
+}
+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---token
